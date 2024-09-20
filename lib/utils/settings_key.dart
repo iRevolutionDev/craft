@@ -1,0 +1,3 @@
+enum SettingKey {
+  appLanguage,
+}
