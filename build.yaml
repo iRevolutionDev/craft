@@ -1,0 +1,23 @@
+targets:
+  $default:
+    builders:
+      source_gen|combining_builder:
+        options:
+          ignore_for_file:
+            - always_specify_types
+            - public_member_api_docs
+
+      slang_build_runner:
+        options:
+          base_locale: en
+          input_directory: lib/i18n
+          input_file_pattern: .json
+          output_directory: lib/i18n
+          output_file_name: translations.g.dart
+          output_format: single_file
+          namespaces: false
+          translate_var: t
+          enum_name: AppLocale
+          key_case: snake
+          param_case: camel
+          string_interpolation: double_braces

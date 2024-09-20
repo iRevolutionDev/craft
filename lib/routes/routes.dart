@@ -9,6 +9,6 @@ part 'routes.g.dart';
 class LoginRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const ConnectionPage();
+    return ConnectionPage();
   }
 }

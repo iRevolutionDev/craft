@@ -1,12 +1,12 @@
 {
   "screens": {
     "connection": {
-      "title": "Connection",
+      "title": "Conexão",
       "form": {
         "host": "Ip",
-        "port": "Port"
+        "port": "Porta"
       },
-      "alwaysConnect": "Always connect to this server?",
+      "alwaysConnect": "Sempre conectar neste server?",
       "connect": "Connect"
     }
   }
