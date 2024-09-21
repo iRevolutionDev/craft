@@ -656,6 +656,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "models"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
 name = "multer"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -929,6 +939,7 @@ dependencies = [
  "env_logger",
  "futures",
  "log",
+ "models",
  "serde",
  "serde_json",
  "tokio",

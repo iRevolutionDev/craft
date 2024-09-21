@@ -1,8 +1,8 @@
-use crate::proto::ServerMessage::Alive;
-use crate::proto::{ClientMessage, CreateRoom, ErrorType, IncomingMessage, Join, Message, OutgoingMessage, Room, ServerMessage, User};
 use chrono::Duration;
 use futures::StreamExt;
 use log::info;
+use models::proto::ServerMessage::Alive;
+use models::proto::{ClientMessage, CreateRoom, ErrorType, IncomingMessage, Join, Message, OutgoingMessage, Room, ServerMessage, User};
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
 use tokio::sync::{broadcast, RwLock};

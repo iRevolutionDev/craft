@@ -1,9 +1,9 @@
 use crate::client::Client;
 use crate::lobby::{Lobby, LobbyOptions};
-use crate::proto::IncomingMessage;
 use chrono::Duration;
 use futures::{StreamExt, TryStreamExt};
 use log::{error, info};
+use models::proto::IncomingMessage;
 use std::sync::Arc;
 use tokio::sync::mpsc::{unbounded_channel, UnboundedSender};
 use tokio_stream::wrappers::{BroadcastStream, UnboundedReceiverStream};

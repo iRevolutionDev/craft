@@ -1,8 +1,8 @@
 use crate::error::Error::SystemError;
 use crate::error::Result;
-use crate::proto::{IncomingMessage, OutgoingMessage};
 use futures::stream::SplitStream;
 use futures::{Stream, StreamExt, TryStream, TryStreamExt};
+use models::proto::{IncomingMessage, OutgoingMessage};
 use std::{error, future, result};
 use uuid::Uuid;
 use warp::ws::WebSocket;
