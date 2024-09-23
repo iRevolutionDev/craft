@@ -2,7 +2,7 @@ use chrono::Duration;
 use futures::StreamExt;
 use log::info;
 use models::proto::ServerMessage::Alive;
-use models::proto::{ClientMessage, CreateRoom, ErrorType, IncomingMessage, Join, Message, OutgoingMessage, Room, ServerMessage, User};
+use models::proto::{ClientMessage, CreateRoom, ErrorType, IncomingMessage, Join, Joined, Message, OutgoingMessage, Room, ServerMessage, User};
 use std::collections::HashMap;
 use tokio::sync::broadcast::{Receiver, Sender};
 use tokio::sync::{broadcast, RwLock};
@@ -85,6 +85,12 @@ impl Lobby {
 
         // Send the user the list of rooms
         self.send_to_user(id, ServerMessage::Rooms(rooms));
+        
+        // Send the user the list of users
+        self.send_to_user(id, ServerMessage::Joined(Joined {
+            user: self.users.read().await.get(&id).unwrap().clone(),
+            users: self.users.read().await.values().cloned().collect(),
+        }));
 
         info!("User joined: {:?}", self.users.read().await.get(&id).unwrap());
     }

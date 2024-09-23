@@ -33,12 +33,15 @@ dependencies:
   go_router: ^14.2.7
   equatable: ^2.0.5
   shared_preferences: ^2.3.2
+  web_socket_channel: ^3.0.1
 
   rust_lib_craft:
     path: rust_builder
   flutter_rust_bridge: 2.4.0
   flutter_form_builder: ^9.3.0
   form_builder_validators: ^11.0.0
+  macros: ^0.1.2-main.4
+  json: ^0.20.2
 
 dev_dependencies:
   flutter_test:

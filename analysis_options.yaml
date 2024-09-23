@@ -13,6 +13,10 @@ linter:
   rules:
 
 analyzer:
+  enable-experiment:
+    - macros
+  exclude:
+    - "lib/app/rust/**"
   language:
     strict-casts: true
     strict-inference: true

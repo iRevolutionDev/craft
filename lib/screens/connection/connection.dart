@@ -1,5 +1,10 @@
+import 'package:craft/app/bloc/connection_bloc/connection_bloc.dart';
+import 'package:craft/app/bloc/connection_bloc/connection_event.dart';
+import 'package:craft/app/bloc/connection_bloc/connection_state.dart';
 import 'package:craft/i18n/translations.g.dart';
+import 'package:craft/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -16,10 +21,33 @@ class ConnectionPage extends StatefulWidget {
 class _ConnectionPageState extends State<ConnectionPage> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  void _submit() {
-    if ((_formKey.currentState?.saveAndValidate()) ?? false) {
-      final values = _formKey.currentState?.value;
+  Future<void> _submit(BuildContext context) async {
+    if (!mounted) return;
+
+    if (!((_formKey.currentState?.saveAndValidate()) ?? false)) {
+      return;
     }
+
+    final values = _formKey.currentState?.value;
+
+    context.read<ConnectionBloc>().add(ConnectToServer(
+        ip: values?['ip'] as String,
+        port: int.parse(values?['port'] as String),
+        alwaysConnect: widget._alwaysConnect));
+
+    context.read<ConnectionBloc>().stream.listen((state) {
+      switch (state) {
+        case ConnectionSuccess():
+          AuthenticationRoute().go(context);
+          break;
+        case ConnectionFailure():
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Failed to connect to server"),
+            backgroundColor: Colors.red,
+          ));
+          break;
+      }
+    });
   }
 
   @override
@@ -62,10 +90,8 @@ class _ConnectionPageState extends State<ConnectionPage> {
                               border: const OutlineInputBorder(),
                               labelText: t.screens.connection.form.host,
                             ),
-                            validator: FormBuilderValidators.compose([
-                              FormBuilderValidators.required(),
-                              FormBuilderValidators.ip(),
-                            ]),
+                            validator: FormBuilderValidators.compose(
+                                [FormBuilderValidators.required()]),
                           ),
                         ),
                         const SizedBox(width: 20),
@@ -89,17 +115,40 @@ class _ConnectionPageState extends State<ConnectionPage> {
                         title: Text(t.screens.connection.always_connect),
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
-                        value: true,
-                        onChanged: null),
+                        value: widget._alwaysConnect,
+                        onChanged: (value) {
+                          setState(() {
+                            widget._alwaysConnect = value ?? false;
+                          });
+                        }),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         padding: const EdgeInsets.all(20),
                       ),
-                      onPressed: widget._isValid ? _submit : null,
-                      child: Text(t.screens.connection.connect),
+                      onPressed:
+                          widget._isValid ? () => _submit(context) : null,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          BlocBuilder<ConnectionBloc, ConnectionBlocState>(
+                              builder: (context, state) {
+                            return switch (state) {
+                              ConnectionLoading() => const SizedBox(
+                                  width: 20,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              _ => const SizedBox(),
+                            };
+                          }),
+                          Text(t.screens.connection.connect,
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary)),
+                        ],
+                      ),
                     ),
                   ],
                 ),
