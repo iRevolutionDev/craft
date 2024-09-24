@@ -1,6 +1,5 @@
 import 'package:craft/app/bloc/authentication_bloc/authentication_bloc.dart';
-import 'package:craft/app/bloc/authentication_bloc/authentication_event.dart';
-import 'package:craft/app/bloc/authentication_bloc/authentication_state.dart';
+import 'package:craft/app/bloc/group_bloc/group_bloc.dart';
 import 'package:craft/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,6 +55,8 @@ class AuthenticationPage extends StatelessWidget {
                               false) {
                             final username = _formKey.currentState
                                 ?.fields['username']?.value as String;
+
+                            context.read<GroupBloc>().add(GroupLoad());
 
                             context
                                 .read<AuthenticationBloc>()

@@ -1,9 +1,11 @@
 import 'package:bloc/bloc.dart';
-import 'package:craft/app/bloc/connection_bloc/connection_event.dart';
-import 'package:craft/app/bloc/connection_bloc/connection_state.dart';
 import 'package:craft/app/repository/connection_repository/repo/connection_repo.dart';
+import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
+
+part 'connection_event.dart';
+part 'connection_state.dart';
 
 @injectable
 class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionBlocState> {

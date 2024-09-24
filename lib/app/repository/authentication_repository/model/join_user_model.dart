@@ -1,25 +1,17 @@
-import 'package:craft/app/models/json_serializeble.dart';
-import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-@immutable
-class JoinUser extends JsonSerializable {
+part 'join_user_model.g.dart';
+
+@JsonSerializable()
+class JoinUser {
   final String username;
 
   JoinUser({
     required this.username,
   });
 
-  @override
-  JoinUser fromJson(Map<String, dynamic> json) {
-    return JoinUser(
-      username: json['username'] as String,
-    );
-  }
+  factory JoinUser.fromJson(Map<String, dynamic> json) =>
+      _$JoinUserFromJson(json);
 
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      'username': username,
-    };
-  }
+  Map<String, dynamic> toJson() => _$JoinUserToJson(this);
 }

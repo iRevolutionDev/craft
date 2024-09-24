@@ -120,6 +120,7 @@ impl Lobby {
         info!("Room created: {:?}", room);
 
         self.send_to_all(ServerMessage::RoomCreated(room)).await;
+        self.send_to_all(ServerMessage::Rooms(self.get_rooms().await)).await;
     }
 
     pub async fn process_join_room(&self, user_id: Uuid, room_id: Uuid, password: Option<String>) {

@@ -1,5 +1,4 @@
-import 'package:craft/app/repository/authentication_repository/model/user_model.dart';
-import 'package:equatable/equatable.dart';
+part of 'authentication_bloc.dart';
 
 abstract class AuthenticationState extends Equatable {
   const AuthenticationState();

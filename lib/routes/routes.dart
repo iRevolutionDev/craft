@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:craft/app/bloc/connection_bloc/connection_bloc.dart';
-import 'package:craft/app/bloc/connection_bloc/connection_event.dart';
 import 'package:craft/screens/authentication/authentication.dart';
 import 'package:craft/screens/connection/connection.dart';
 import 'package:craft/screens/home/home.dart';

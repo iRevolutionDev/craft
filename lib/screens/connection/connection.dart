@@ -1,6 +1,4 @@
 import 'package:craft/app/bloc/connection_bloc/connection_bloc.dart';
-import 'package:craft/app/bloc/connection_bloc/connection_event.dart';
-import 'package:craft/app/bloc/connection_bloc/connection_state.dart';
 import 'package:craft/i18n/translations.g.dart';
 import 'package:craft/routes/routes.dart';
 import 'package:flutter/material.dart';

@@ -9,23 +9,30 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class AuthenticationRepo extends AuthenticationRepository {
-  final WebSocketService _webSocketService = WebSocketService.instance();
+  final _webSocketService = WebSocketService();
 
   @override
   Future<User> login(String username) async {
     final user = JoinUser(username: username);
 
-    _webSocketService.sendMessage(JoinModel(user: user).toJson());
+    final joinModel = JoinModel(data: user);
 
-    await for (final response
-        in _webSocketService.stream.timeout(const Duration(seconds: 5))) {
+    _webSocketService.sendMessage(jsonEncode(joinModel.toJson()));
+
+    final stream = _webSocketService.getStream('login');
+
+    await for (final response in stream.timeout(const Duration(seconds: 5))) {
       final data = jsonDecode(response.toString());
 
-      if (data['type'] == 'joined') {
-        return User.fromJson(data as Map<String, dynamic>);
+      if (data['type'] != 'joined') {
+        continue;
       }
+
+      _webSocketService.closeStream('login');
+      return User.fromJson(data['data']['user'] as Map<String, dynamic>);
     }
 
+    _webSocketService.closeStream('login');
     throw Exception('Failed to login');
   }
 }

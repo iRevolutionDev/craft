@@ -1,9 +1,12 @@
 import 'package:bloc/bloc.dart';
-import 'package:craft/app/bloc/authentication_bloc/authentication_event.dart';
-import 'package:craft/app/bloc/authentication_bloc/authentication_state.dart';
+import 'package:craft/app/repository/authentication_repository/model/user_model.dart';
 import 'package:craft/app/repository/authentication_repository/repo/authentication_repo.dart';
+import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logging/logging.dart';
+
+part 'authentication_event.dart';
+part 'authentication_state.dart';
 
 @injectable
 class AuthenticationBloc
@@ -29,6 +32,7 @@ class AuthenticationBloc
 
       emit(AuthenticationSuccess(user));
     } catch (e) {
+      _logger.severe('Failed to login: $e');
       emit(AuthenticationFailure(e.toString()));
     }
   }
