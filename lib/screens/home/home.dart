@@ -1,12 +1,43 @@
 import 'package:craft/app/bloc/authentication_bloc/authentication_bloc.dart';
+import 'package:craft/app/bloc/chat_bloc/chat_bloc.dart' as chat;
 import 'package:craft/app/bloc/group_bloc/group_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Map<String, List<types.TextMessage>> messages = {};
+  List<String> joinedGroups = [];
+  String? roomId;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _onGroupTap(String uuid) {
+    if (joinedGroups.contains(uuid)) {
+      setState(() {
+        roomId = uuid;
+      });
+    } else {
+      context.read<GroupBloc>().add(GroupJoin(
+            groupId: uuid,
+          ));
+      setState(() {
+        roomId = uuid;
+        joinedGroups.add(uuid);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,34 +45,62 @@ class HomeScreen extends StatelessWidget {
       body: Center(
         child: Row(
           children: [
-            const SafeArea(child: SideMenu()),
+            SafeArea(child: SideMenu(onGroupTap: _onGroupTap)),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  BlocBuilder<AuthenticationBloc, AuthenticationState>(
-                    builder: (context, state) {
-                      return switch (state) {
-                        AuthenticationSuccess(user: final user) => Expanded(
-                            child: Chat(
-                              messages: [
-                                types.TextMessage(
-                                    author: types.User(id: user.id),
-                                    id: '1',
-                                    text:
-                                        'Affs não aguento mais socorro 😔✊🏻'),
-                              ],
-                              user: types.User(id: user.id),
-                              onSendPressed: (message) {
-                                // Handle send message
-                              },
-                            ),
-                          ),
-                        _ => const Text('Loading...'),
-                      };
-                    },
-                  ),
-                ],
+                children: roomId == null
+                    ? const [
+                        Text('Select a group to start chatting'),
+                      ]
+                    : [
+                        BlocListener<chat.ChatBloc, chat.ChatState>(
+                            listener: (context, state) {
+                              switch (state) {
+                                case chat.ChatMessageReceivedSuccess(
+                                    chatMessage: final message
+                                  ):
+                                  setState(() {
+                                    messages[roomId]?.insert(
+                                        0,
+                                        types.TextMessage(
+                                          author:
+                                              types.User(id: message.userId),
+                                          id: message.id,
+                                          text: message.message,
+                                          createdAt: DateTime.now()
+                                              .millisecondsSinceEpoch,
+                                        ));
+                                  });
+                                  break;
+                                default:
+                                  break;
+                              }
+                            },
+                            child: const SizedBox()),
+                        BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                          builder: (context, state) {
+                            return switch (state) {
+                              AuthenticationSuccess(user: final user) =>
+                                Expanded(
+                                  child: Chat(
+                                    messages: messages[roomId] ?? [],
+                                    onSendPressed: (message) {
+                                      context.read<chat.ChatBloc>().add(
+                                            chat.ChatMessageSent(
+                                              roomId: roomId ?? '',
+                                              message: message.text,
+                                            ),
+                                          );
+                                    },
+                                    user: types.User(id: user.id),
+                                  ),
+                                ),
+                              _ => const CircularProgressIndicator(),
+                            };
+                          },
+                        ),
+                      ],
               ),
             ),
           ],
@@ -52,7 +111,9 @@ class HomeScreen extends StatelessWidget {
 }
 
 class SideMenu extends StatelessWidget {
-  const SideMenu({super.key});
+  final void Function(String uuid) onGroupTap;
+
+  const SideMenu({super.key, required this.onGroupTap});
 
   @override
   Widget build(BuildContext context) {
@@ -68,13 +129,11 @@ class SideMenu extends StatelessWidget {
                       final group = groups[index];
                       return ListTile(
                         title: Text(group.name),
-                        onTap: () {
-                          // Handle group tap
-                        },
+                        onTap: () => onGroupTap(group.id),
                       );
                     },
                   ),
-                _ => const Text('Loading...'),
+                _ => const CircularProgressIndicator(),
               },
             ),
             Padding(
@@ -91,7 +150,7 @@ class SideMenu extends StatelessWidget {
   }
 
   void _showAddGroupDialog(BuildContext context) {
-    final TextEditingController _groupNameController = TextEditingController();
+    final TextEditingController groupNameController = TextEditingController();
 
     showDialog<void>(
       context: context,
@@ -99,7 +158,7 @@ class SideMenu extends StatelessWidget {
         return AlertDialog(
           title: const Text('Add group'),
           content: TextField(
-            controller: _groupNameController,
+            controller: groupNameController,
             decoration: const InputDecoration(
                 border: OutlineInputBorder(), hintText: 'Group name'),
           ),
@@ -110,7 +169,7 @@ class SideMenu extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                final groupName = _groupNameController.text;
+                final groupName = groupNameController.text;
                 if (groupName.isNotEmpty) {
                   context.read<GroupBloc>().add(GroupCreate(
                         name: groupName,

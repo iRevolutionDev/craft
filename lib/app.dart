@@ -1,4 +1,5 @@
 import 'package:craft/app/bloc/authentication_bloc/authentication_bloc.dart';
+import 'package:craft/app/bloc/chat_bloc/chat_bloc.dart';
 import 'package:craft/app/bloc/connection_bloc/connection_bloc.dart';
 import 'package:craft/app/bloc/group_bloc/group_bloc.dart';
 import 'package:craft/app/cubit/theme_cubit/theme_cubit.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       BlocProvider(create: (_) => getIt<ConnectionBloc>()),
       BlocProvider(create: (_) => getIt<AuthenticationBloc>()),
       BlocProvider(create: (_) => getIt<GroupBloc>()..add(GroupLoad())),
+      BlocProvider(create: (_) => getIt<ChatBloc>()..add(ChatStarted())),
     ], child: const _App());
   }
 }

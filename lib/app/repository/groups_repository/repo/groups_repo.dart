@@ -46,4 +46,24 @@ class GroupsRepo extends GroupsRepository {
       return type == 'room_created';
     });
   }
+
+  @override
+  Future<void> joinGroup(String groupId) {
+    _webSocketService.closeStream('join_group');
+
+    final data = jsonEncode({
+      'type': 'join_room',
+      'data': groupId,
+    });
+    _webSocketService.sendMessage(data);
+
+    final stream = _webSocketService.getStream('join_group');
+
+    return stream.firstWhere((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final type = data['type'] as String;
+
+      return type == 'room_joined';
+    });
+  }
 }

@@ -15,6 +15,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   ) : super(GroupInitial()) {
     on<GroupLoad>(_onGroupLoaded);
     on<GroupCreate>(_onGroupCreate);
+    on<GroupJoin>(_onGroupJoin);
   }
 
   final GroupsRepo _groupRepository;
@@ -44,6 +45,20 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       await _groupRepository
           .createGroup(CreateGroup(name: event.name, password: event.password));
       emit(GroupCreated());
+    } catch (e) {
+      emit(GroupError(message: e.toString()));
+      rethrow;
+    }
+  }
+
+  void _onGroupJoin(
+    GroupJoin event,
+    Emitter<GroupState> emit,
+  ) async {
+    emit(GroupLoading());
+    try {
+      await _groupRepository.joinGroup(event.groupId);
+      emit(GroupJoined());
     } catch (e) {
       emit(GroupError(message: e.toString()));
       rethrow;

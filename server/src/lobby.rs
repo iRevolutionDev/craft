@@ -57,7 +57,7 @@ impl Lobby {
         match message.message {
             ClientMessage::Join(join) => self.process_joined(message.client_id, join).await,
             ClientMessage::CreateRoom(create_room) => self.process_create_room(message.client_id, create_room).await,
-            ClientMessage::JoinRoom(id, password) => self.process_join_room(message.client_id, id, password).await,
+            ClientMessage::JoinRoom(id) => self.process_join_room(message.client_id, id).await,
             ClientMessage::Send(send) => self.process_message(message.client_id, send.room_id, send.message).await,
             _ => {}
         }
@@ -85,7 +85,7 @@ impl Lobby {
 
         // Send the user the list of rooms
         self.send_to_user(id, ServerMessage::Rooms(rooms));
-        
+
         // Send the user the list of users
         self.send_to_user(id, ServerMessage::Joined(Joined {
             user: self.users.read().await.get(&id).unwrap().clone(),
@@ -123,7 +123,7 @@ impl Lobby {
         self.send_to_all(ServerMessage::Rooms(self.get_rooms().await)).await;
     }
 
-    pub async fn process_join_room(&self, user_id: Uuid, room_id: Uuid, password: Option<String>) {
+    pub async fn process_join_room(&self, user_id: Uuid, room_id: Uuid) {
         if !self.is_user_joined(user_id).await {
             self.send_error(user_id, ErrorType::NotJoined);
             return;
@@ -136,12 +136,12 @@ impl Lobby {
             return;
         }
 
-        if (room.password.is_some() && password.is_none())
-            || (room.password.is_some() && room.password != password)
-        {
-            self.send_error(user_id, ErrorType::RoomWrongPassword);
-            return;
-        }
+        // if (room.password.is_some() && password.is_none())
+        //     || (room.password.is_some() && room.password != password)
+        // {
+        //     self.send_error(user_id, ErrorType::RoomWrongPassword);
+        //     return;
+        // }
 
         if room.users.contains(&user_id) {
             self.send_error(user_id, ErrorType::NotInRoom);
@@ -189,6 +189,7 @@ impl Lobby {
 
         let message = Message {
             id: Uuid::new_v4(),
+            room_id,
             user_id,
             message,
             create_at: chrono::Utc::now(),

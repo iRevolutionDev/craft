@@ -8,7 +8,7 @@ pub enum ClientMessage {
     Join(Join),
     Leave,
     CreateRoom(CreateRoom),
-    JoinRoom(Uuid, Option<String>),
+    JoinRoom(Uuid),
     Send(Send),
 }
 
@@ -74,6 +74,7 @@ pub struct Joined {
 pub struct Message {
     pub id: Uuid,
     pub user_id: Uuid,
+    pub room_id: Uuid,
     pub message: String,
     pub create_at: DateTime<Utc>,
 }

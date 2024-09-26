@@ -5,15 +5,21 @@ part 'message_model.g.dart';
 @JsonSerializable()
 class Message {
   final String id;
+  @JsonKey(name: 'user_id')
   final String userId;
+  @JsonKey(name: 'room_id')
+  final String roomId;
   final String message;
-  final DateTime createdAt;
+
+  // @JsonKey(name: 'created_at')
+  // final DateTime createdAt;
 
   Message({
     required this.id,
     required this.userId,
+    required this.roomId,
     required this.message,
-    required this.createdAt,
+    // required this.createdAt,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>
