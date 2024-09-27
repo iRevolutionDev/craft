@@ -11,8 +11,35 @@ class GroupsRepo extends GroupsRepository {
   final _webSocketService = WebSocketService();
 
   @override
-  Stream<List<Group>> getGroups() async* {
+  Future<List<Group>> getGroups() {
     _webSocketService.closeStream('groups');
+
+    final data = jsonEncode({'type': 'get_rooms'});
+    _webSocketService.sendMessage(data);
+
+    final stream = _webSocketService.getStream('groups');
+
+    return stream.firstWhere((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final type = data['type'] as String;
+
+      return type == 'rooms';
+    }).then((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final groups = (data['data'] as List)
+          .map((group) => Group.fromJson(group as Map<String, dynamic>))
+          .toList();
+
+      return groups;
+    });
+  }
+
+  @override
+  Stream<List<Group>> getGroupsStream() async* {
+    _webSocketService.closeStream('groups');
+
+    final data = jsonEncode({'type': 'get_rooms'});
+    _webSocketService.sendMessage(data);
 
     final stream = _webSocketService.getStream('groups');
 
@@ -48,7 +75,7 @@ class GroupsRepo extends GroupsRepository {
   }
 
   @override
-  Future<void> joinGroup(String groupId) {
+  Future<Group> joinGroup(String groupId) {
     _webSocketService.closeStream('join_group');
 
     final data = jsonEncode({
@@ -63,7 +90,20 @@ class GroupsRepo extends GroupsRepository {
       final data = jsonDecode(message as String) as Map<String, dynamic>;
       final type = data['type'] as String;
 
-      return type == 'room_joined';
+      return type == 'joined_room';
+    }).then((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final room = data['data'] as Map<String, dynamic>;
+
+      if (room.isEmpty) {
+        throw Exception('Room not found');
+      }
+
+      if (room['error'] != null) {
+        throw Exception(room['error']);
+      }
+
+      return Group.fromJson(room);
     });
   }
 }

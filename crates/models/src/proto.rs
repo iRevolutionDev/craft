@@ -7,9 +7,11 @@ use uuid::Uuid;
 pub enum ClientMessage {
     Join(Join),
     Leave,
+    GetRooms,
     CreateRoom(CreateRoom),
     JoinRoom(Uuid),
     Send(Send),
+    GetMessages(Uuid),
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -25,6 +27,7 @@ pub enum ServerMessage {
     JoinedRoom(Room),
     LeftRoom(Uuid),
     Message(Message),
+    Messages(Vec<Message>),
     Error(ErrorType),
 }
 

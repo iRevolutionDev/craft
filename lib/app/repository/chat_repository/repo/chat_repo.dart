@@ -19,7 +19,29 @@ class ChatRepo extends ChatRepository {
   }
 
   @override
-  Stream<Message> getMessages() async* {
+  Future<List<Message>> getMessages(String groupId) async {
+    final data = jsonEncode({'type': 'get_messages', 'data': groupId});
+    _webSocketService.sendMessage(data);
+
+    final stream = _webSocketService.getStream('messages');
+
+    return stream.firstWhere((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final type = data['type'] as String;
+
+      return type == 'messages';
+    }).then((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final messages = (data['data'] as List)
+          .map((message) => Message.fromJson(message as Map<String, dynamic>))
+          .toList();
+
+      return messages;
+    });
+  }
+
+  @override
+  Stream<Message> getMessagesStream() async* {
     _webSocketService.closeStream('messages');
 
     final stream = _webSocketService.getStream('messages');

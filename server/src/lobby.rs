@@ -57,10 +57,37 @@ impl Lobby {
         match message.message {
             ClientMessage::Join(join) => self.process_joined(message.client_id, join).await,
             ClientMessage::CreateRoom(create_room) => self.process_create_room(message.client_id, create_room).await,
+            ClientMessage::GetRooms => self.process_get_rooms(message.client_id).await,
+            ClientMessage::GetMessages(room_id) => self.process_get_messages(message.client_id, room_id).await,
             ClientMessage::JoinRoom(id) => self.process_join_room(message.client_id, id).await,
             ClientMessage::Send(send) => self.process_message(message.client_id, send.room_id, send.message).await,
             _ => {}
         }
+    }
+    
+    pub async fn process_get_rooms(&self, user_id: Uuid) {
+        if !self.is_user_joined(user_id).await {
+            self.send_error(user_id, ErrorType::NotJoined);
+            return;
+        }
+
+        self.send_to_user(user_id, ServerMessage::Rooms(self.get_rooms().await));
+    }
+    
+    pub async fn process_get_messages(&self, user_id: Uuid, room_id: Uuid) {
+        if !self.is_user_joined(user_id).await {
+            self.send_error(user_id, ErrorType::NotJoined);
+            return;
+        }
+
+        let room = self.get_room(room_id).await.unwrap();
+
+        if !room.users.contains(&user_id) {
+            self.send_error(user_id, ErrorType::NotInRoom);
+            return;
+        }
+        
+        self.send_to_user(user_id, ServerMessage::Messages(room.messages));
     }
 
     pub async fn process_joined(&self, id: Uuid, join: Join) {
@@ -194,15 +221,15 @@ impl Lobby {
             message,
             create_at: chrono::Utc::now(),
         };
-
+        
         self.rooms
             .write()
             .await
             .get_mut(&room_id)
             .unwrap()
             .messages
-            .push(message.clone());
-
+            .insert(0, message.clone());
+        
         self.send_to_room(room_id, ServerMessage::Message(message)).await;
     }
 

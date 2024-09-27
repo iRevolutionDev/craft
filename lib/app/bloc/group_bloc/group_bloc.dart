@@ -26,7 +26,8 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   ) async {
     emit(GroupLoading());
     try {
-      final groups = _groupRepository.getGroups();
+      final groups = _groupRepository.getGroupsStream();
+
       await for (final group in groups) {
         emit(GroupLoaded(groups: group));
       }
@@ -57,8 +58,10 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   ) async {
     emit(GroupLoading());
     try {
-      await _groupRepository.joinGroup(event.groupId);
-      emit(GroupJoined());
+      final group = await _groupRepository.joinGroup(event.groupId);
+      emit(GroupJoined(group: group));
+
+      add(GroupLoad());
     } catch (e) {
       emit(GroupError(message: e.toString()));
       rethrow;

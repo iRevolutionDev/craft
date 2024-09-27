@@ -2,9 +2,11 @@ import 'package:craft/app/repository/groups_repository/models/create_group_model
 import 'package:craft/app/repository/groups_repository/models/group_model.dart';
 
 abstract class GroupsRepository {
-  Stream<List<Group>> getGroups();
+  Future<List<Group>> getGroups();
+
+  Stream<List<Group>> getGroupsStream();
 
   Future<void> createGroup(CreateGroup group);
 
-  Future<void> joinGroup(String groupId);
+  Future<Group> joinGroup(String groupId);
 }

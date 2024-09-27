@@ -23,7 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void _onGroupTap(String uuid) {
+  void _onGroupTap(String owner, String uuid) {
+    final state = context.read<AuthenticationBloc>().state;
+
+    if (state is AuthenticationSuccess && state.user.id == owner) {
+      setState(() {
+        roomId = uuid;
+      });
+      return;
+    }
+
     if (joinedGroups.contains(uuid)) {
       setState(() {
         roomId = uuid;
@@ -34,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ));
       setState(() {
         roomId = uuid;
-        joinedGroups.add(uuid);
       });
     }
   }
@@ -78,12 +86,40 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                             },
                             child: const SizedBox()),
+                        BlocListener<GroupBloc, GroupState>(
+                          listener: (context, state) {
+                            switch (state) {
+                              case GroupJoined(group: final group):
+                                setState(() {
+                                  joinedGroups.add(group.id);
+                                  messages[group.id] = group.messages
+                                      .map((e) => types.TextMessage(
+                                            author: types.User(id: e.userId),
+                                            id: e.id,
+                                            text: e.message,
+                                            createdAt: DateTime.now()
+                                                .millisecondsSinceEpoch,
+                                          ))
+                                      .toList();
+                                });
+                                break;
+                              default:
+                                break;
+                            }
+                          },
+                          child: const SizedBox(),
+                        ),
                         BlocBuilder<AuthenticationBloc, AuthenticationState>(
                           builder: (context, state) {
                             return switch (state) {
                               AuthenticationSuccess(user: final user) =>
                                 Expanded(
                                   child: Chat(
+                                    theme: DefaultChatTheme(
+                                        backgroundColor: Colors.transparent,
+                                        inputMargin: const EdgeInsets.all(8),
+                                        inputBorderRadius:
+                                            BorderRadius.circular(20)),
                                     messages: messages[roomId] ?? [],
                                     onSendPressed: (message) {
                                       context.read<chat.ChatBloc>().add(
@@ -111,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class SideMenu extends StatelessWidget {
-  final void Function(String uuid) onGroupTap;
+  final void Function(String owner, String uuid) onGroupTap;
 
   const SideMenu({super.key, required this.onGroupTap});
 
@@ -121,21 +157,20 @@ class SideMenu extends StatelessWidget {
       child: BlocBuilder<GroupBloc, GroupState>(builder: (context, state) {
         return Column(
           children: [
-            Expanded(
-              child: switch (state) {
-                GroupLoaded(groups: final groups) => ListView.builder(
-                    itemCount: groups.length,
-                    itemBuilder: (context, index) {
-                      final group = groups[index];
-                      return ListTile(
-                        title: Text(group.name),
-                        onTap: () => onGroupTap(group.id),
-                      );
-                    },
-                  ),
-                _ => const CircularProgressIndicator(),
-              },
-            ),
+            switch (state) {
+              GroupLoaded(groups: final groups) => Expanded(
+                    child: ListView.builder(
+                  itemCount: groups.length,
+                  itemBuilder: (context, index) {
+                    final group = groups[index];
+                    return ListTile(
+                      title: Text(group.name),
+                      onTap: () => onGroupTap(group.owner, group.id),
+                    );
+                  },
+                )),
+              _ => const CircularProgressIndicator(),
+            },
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: FloatingActionButton(

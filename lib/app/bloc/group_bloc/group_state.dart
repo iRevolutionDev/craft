@@ -35,4 +35,13 @@ class GroupError extends GroupState {
   List<Object> get props => [message];
 }
 
-class GroupJoined extends GroupState {}
+class GroupJoined extends GroupState {
+  final Group group;
+
+  const GroupJoined({
+    required this.group,
+  });
+
+  @override
+  List<Object> get props => [group];
+}
