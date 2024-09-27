@@ -79,7 +79,7 @@ pub struct Message {
     pub user: User,
     pub room_id: Uuid,
     pub message: String,
-    pub create_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

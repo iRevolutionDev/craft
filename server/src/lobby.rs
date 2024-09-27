@@ -64,7 +64,7 @@ impl Lobby {
             _ => {}
         }
     }
-    
+
     pub async fn process_get_rooms(&self, user_id: Uuid) {
         if !self.is_user_joined(user_id).await {
             self.send_error(user_id, ErrorType::NotJoined);
@@ -73,7 +73,7 @@ impl Lobby {
 
         self.send_to_user(user_id, ServerMessage::Rooms(self.get_rooms().await));
     }
-    
+
     pub async fn process_get_messages(&self, user_id: Uuid, room_id: Uuid) {
         if !self.is_user_joined(user_id).await {
             self.send_error(user_id, ErrorType::NotJoined);
@@ -86,7 +86,7 @@ impl Lobby {
             self.send_error(user_id, ErrorType::NotInRoom);
             return;
         }
-        
+
         self.send_to_user(user_id, ServerMessage::Messages(room.messages));
     }
 
@@ -213,7 +213,7 @@ impl Lobby {
             self.send_error(user_id, ErrorType::InvalidMessage);
             return;
         }
-        
+
         let user = self.users.read().await.get(&user_id).unwrap().clone();
 
         let message = Message {
@@ -221,9 +221,9 @@ impl Lobby {
             room_id,
             user,
             message,
-            create_at: chrono::Utc::now(),
+            created_at: chrono::Utc::now(),
         };
-        
+
         self.rooms
             .write()
             .await
@@ -231,7 +231,7 @@ impl Lobby {
             .unwrap()
             .messages
             .insert(0, message.clone());
-        
+
         self.send_to_room(room_id, ServerMessage::Message(message)).await;
     }
 

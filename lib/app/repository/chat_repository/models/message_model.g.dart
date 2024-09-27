@@ -13,6 +13,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       user: User.fromJson(json['user'] as Map<String, dynamic>),
       roomId: json['room_id'] as String,
       message: json['message'] as String,
+      createdAt: Message._dateTimeFromTimestamp(json['created_at'] as String?),
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'user': instance.user,
       'room_id': instance.roomId,
       'message': instance.message,
+      'created_at': Message._dateTimeToTimestamp(instance.createdAt),
     };

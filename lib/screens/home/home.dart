@@ -77,8 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           id: message.id,
                                           text: message.message,
-                                          createdAt: DateTime.now()
-                                              .millisecondsSinceEpoch,
+                                          createdAt: message
+                                              .createdAt.millisecondsSinceEpoch,
                                         ));
                                   });
                                   break;
