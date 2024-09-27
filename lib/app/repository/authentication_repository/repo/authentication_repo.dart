@@ -35,4 +35,9 @@ class AuthenticationRepo extends AuthenticationRepository {
     _webSocketService.closeStream('login');
     throw Exception('Failed to login');
   }
+
+  @override
+  void close() {
+    _webSocketService.closeStream('login');
+  }
 }

@@ -36,4 +36,10 @@ class AuthenticationBloc
       emit(AuthenticationFailure(e.toString()));
     }
   }
+
+  @override
+  Future<void> close() {
+    _authenticationRepository.close();
+    return super.close();
+  }
 }

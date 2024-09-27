@@ -67,4 +67,10 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
       rethrow;
     }
   }
+
+  @override
+  Future<void> close() {
+    _groupRepository.close();
+    return super.close();
+  }
 }

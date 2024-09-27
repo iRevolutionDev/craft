@@ -6,4 +6,6 @@ abstract class ChatRepository {
   Future<List<Message>> getMessages(String groupId);
 
   Stream<Message> getMessagesStream();
+
+  void close();
 }

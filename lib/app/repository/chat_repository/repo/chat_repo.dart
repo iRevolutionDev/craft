@@ -57,4 +57,9 @@ class ChatRepo extends ChatRepository {
       }
     }
   }
+
+  @override
+  void close() {
+    _webSocketService.closeStream('messages');
+  }
 }

@@ -2,4 +2,6 @@ import 'package:craft/app/repository/authentication_repository/model/user_model.
 
 abstract class AuthenticationRepository {
   Future<User> login(String username);
+
+  void close();
 }

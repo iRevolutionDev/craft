@@ -31,4 +31,10 @@ class ConnectionBloc extends Bloc<ConnectionEvent, ConnectionBlocState> {
       emit(ConnectionFailure(e.toString()));
     }
   }
+
+  @override
+  Future<void> close() {
+    _connectionRepository.disconnect();
+    return super.close();
+  }
 }

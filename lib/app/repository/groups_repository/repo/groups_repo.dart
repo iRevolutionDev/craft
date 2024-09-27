@@ -106,4 +106,11 @@ class GroupsRepo extends GroupsRepository {
       return Group.fromJson(room);
     });
   }
+
+  @override
+  void close() {
+    _webSocketService.closeStream('groups');
+    _webSocketService.closeStream('create_group');
+    _webSocketService.closeStream('join_group');
+  }
 }

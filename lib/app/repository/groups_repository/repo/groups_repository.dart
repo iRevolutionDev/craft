@@ -9,4 +9,6 @@ abstract class GroupsRepository {
   Future<void> createGroup(CreateGroup group);
 
   Future<Group> joinGroup(String groupId);
+
+  void close();
 }

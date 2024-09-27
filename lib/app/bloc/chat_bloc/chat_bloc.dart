@@ -11,13 +11,15 @@ part 'chat_state.dart';
 
 @injectable
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  ChatBloc({required this.chatRepository}) : super(ChatInitial()) {
+  ChatBloc({required ChatRepo chatRepository})
+      : _chatRepository = chatRepository,
+        super(ChatInitial()) {
     on<ChatFetch>(_onChatFetch);
     on<ChatStarted>(_onChatStarted);
     on<ChatMessageSent>(_onChatMessageSent);
   }
 
-  final ChatRepo chatRepository;
+  final ChatRepo _chatRepository;
 
   void _onChatStarted(
     ChatStarted event,
@@ -25,7 +27,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     emit(ChatLoading());
     try {
-      final messages = chatRepository.getMessagesStream();
+      final messages = _chatRepository.getMessagesStream();
       await for (final message in messages) {
         emit(ChatMessageReceivedSuccess(message));
       }
@@ -41,7 +43,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     emit(ChatLoading());
     try {
-      await chatRepository.sendMessage(
+      await _chatRepository.sendMessage(
         event.roomId,
         event.message,
       );
@@ -55,7 +57,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   Future<void> _onChatFetch(ChatFetch event, Emitter<ChatState> emit) async {
     emit(ChatLoading());
     try {
-      final messages = await chatRepository.getMessages(event.roomId);
+      final messages = await _chatRepository.getMessages(event.roomId);
       for (final message in messages) {
         emit(ChatMessageLoadSuccess(message));
       }
@@ -63,5 +65,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       emit(ChatError(message: e.toString()));
       rethrow;
     }
+  }
+
+  @override
+  Future<void> close() {
+    _chatRepository.close();
+    return super.close();
   }
 }
