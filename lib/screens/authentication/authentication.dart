@@ -43,11 +43,9 @@ class AuthenticationPage extends StatelessWidget {
                         ]),
                       ),
                       const SizedBox(height: 16),
-                      ElevatedButton(
+                      FilledButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size(double.infinity, 50),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
                           padding: const EdgeInsets.all(20),
                         ),
                         onPressed: () {

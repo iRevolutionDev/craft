@@ -104,31 +104,20 @@ class _SideMenuState extends State<SideMenu> {
                           const Spacer(),
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
-                            child: ElevatedButton.icon(
+                            child: FilledButton.icon(
                                 style: ElevatedButton.styleFrom(
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  backgroundColor:
-                                      Theme.of(context).colorScheme.primary,
-                                  textStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary),
                                 ),
                                 onPressed: () => _showAddGroupDialog(context),
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.add,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
-                                label: Text('Add group',
+                                label: const Text('Add group',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary))),
+                                        fontSize: 14))),
                           ),
                         ],
                       ),
