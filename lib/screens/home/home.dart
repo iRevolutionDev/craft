@@ -94,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 setState(() {
                                   roomId = group.id;
                                   joinedGroups.add(group.id);
+                                  messages[group.id] = [];
                                 });
                                 break;
                               case GroupJoined(group: final group):
