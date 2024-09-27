@@ -50,7 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Center(
         child: Row(
           children: [
-            SafeArea(child: SideMenu(onGroupTap: _onGroupTap)),
+            SafeArea(
+                child: SideMenu(
+                    onGroupTap: _onGroupTap, selectedGroup: roomId ?? '')),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -150,9 +152,11 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class SideMenu extends StatelessWidget {
+  final String selectedGroup;
   final void Function(String owner, String uuid) onGroupTap;
 
-  const SideMenu({super.key, required this.onGroupTap});
+  const SideMenu(
+      {super.key, required this.onGroupTap, required this.selectedGroup});
 
   @override
   Widget build(BuildContext context) {
@@ -167,6 +171,11 @@ class SideMenu extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final group = groups[index];
                     return ListTile(
+                      leading: CircleAvatar(
+                        child: Text(group.name[0]),
+                      ),
+                      selected: selectedGroup == group.id,
+                      selectedTileColor: Theme.of(context).primaryColor,
                       title: Text(group.name),
                       onTap: () => onGroupTap(group.owner, group.id),
                     );
