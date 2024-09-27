@@ -83,7 +83,7 @@ class AuthenticationPage extends StatelessWidget {
                             switch (state) {
                               case AuthenticationSuccess():
                                 {
-                                  HomeRoute().push(context);
+                                  HomeRoute().pushReplacement(context);
                                   break;
                                 }
                             }
