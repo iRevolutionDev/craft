@@ -10,14 +10,14 @@ part of 'message_model.dart';
 
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       id: json['id'] as String,
-      userId: json['user_id'] as String,
+      user: User.fromJson(json['user'] as Map<String, dynamic>),
       roomId: json['room_id'] as String,
       message: json['message'] as String,
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'id': instance.id,
-      'user_id': instance.userId,
+      'user': instance.user,
       'room_id': instance.roomId,
       'message': instance.message,
     };

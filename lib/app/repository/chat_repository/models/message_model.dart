@@ -1,3 +1,4 @@
+import 'package:craft/app/repository/authentication_repository/model/user_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'message_model.g.dart';
@@ -5,8 +6,7 @@ part 'message_model.g.dart';
 @JsonSerializable()
 class Message {
   final String id;
-  @JsonKey(name: 'user_id')
-  final String userId;
+  final User user;
   @JsonKey(name: 'room_id')
   final String roomId;
   final String message;
@@ -16,7 +16,7 @@ class Message {
 
   Message({
     required this.id,
-    required this.userId,
+    required this.user,
     required this.roomId,
     required this.message,
     // required this.createdAt,

@@ -213,11 +213,13 @@ impl Lobby {
             self.send_error(user_id, ErrorType::InvalidMessage);
             return;
         }
+        
+        let user = self.users.read().await.get(&user_id).unwrap().clone();
 
         let message = Message {
             id: Uuid::new_v4(),
             room_id,
-            user_id,
+            user,
             message,
             create_at: chrono::Utc::now(),
         };

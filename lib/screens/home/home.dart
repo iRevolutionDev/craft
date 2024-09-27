@@ -71,8 +71,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     messages[roomId]?.insert(
                                         0,
                                         types.TextMessage(
-                                          author:
-                                              types.User(id: message.userId),
+                                          author: types.User(
+                                            id: message.user.id,
+                                            firstName: message.user.name,
+                                          ),
                                           id: message.id,
                                           text: message.message,
                                           createdAt: DateTime.now()
@@ -99,7 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   joinedGroups.add(group.id);
                                   messages[group.id] = group.messages
                                       .map((e) => types.TextMessage(
-                                            author: types.User(id: e.userId),
+                                            author: types.User(
+                                                id: e.user.id,
+                                                firstName: e.user.name),
                                             id: e.id,
                                             text: e.message,
                                             createdAt: DateTime.now()
@@ -126,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         inputBorderRadius:
                                             BorderRadius.circular(20)),
                                     messages: messages[roomId] ?? [],
+                                    showUserAvatars: true,
                                     onSendPressed: (message) {
                                       context.read<chat.ChatBloc>().add(
                                             chat.ChatMessageSent(

@@ -76,7 +76,7 @@ pub struct Joined {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Message {
     pub id: Uuid,
-    pub user_id: Uuid,
+    pub user: User,
     pub room_id: Uuid,
     pub message: String,
     pub create_at: DateTime<Utc>,
