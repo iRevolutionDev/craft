@@ -54,7 +54,7 @@ class _SideMenuState extends State<SideMenu> {
         builder: (context, state) {
           return switch (state) {
             GroupLoaded(groups: final groups) => Row(
-                children: groups.isNotEmpty
+                children: groups.isNotEmpty && widget.selectedGroup.isNotEmpty
                     ? [
                         CircleAvatar(
                             child: Text(groups
@@ -71,7 +71,7 @@ class _SideMenuState extends State<SideMenu> {
                             .name),
                       ]
                     : []),
-            _ => const Text('Craft'),
+            _ => const CircularProgressIndicator(),
           };
         },
       ),
