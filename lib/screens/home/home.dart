@@ -50,8 +50,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return SideMenu(
       onGroupTap: _onGroupTap,
       selectedGroup: roomId ?? '',
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Flex(
+        direction: Axis.vertical,
         children: roomId == null
             ? const [
                 Text('Select a group to start chatting'),
