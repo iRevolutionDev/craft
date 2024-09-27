@@ -58,7 +58,7 @@ class GroupsRepo extends GroupsRepository {
   }
 
   @override
-  Future<void> createGroup(CreateGroup group) {
+  Future<Group> createGroup(CreateGroup group) {
     _webSocketService.closeStream('create_group');
 
     final data = jsonEncode(CreateGroupPacketModel(data: group).toJson());
@@ -71,6 +71,19 @@ class GroupsRepo extends GroupsRepository {
       final type = data['type'] as String;
 
       return type == 'room_created';
+    }).then((message) {
+      final data = jsonDecode(message as String) as Map<String, dynamic>;
+      final room = data['data'] as Map<String, dynamic>;
+
+      if (room.isEmpty) {
+        throw Exception('Room not found');
+      }
+
+      if (room['error'] != null) {
+        throw Exception(room['error']);
+      }
+
+      return Group.fromJson(room);
     });
   }
 

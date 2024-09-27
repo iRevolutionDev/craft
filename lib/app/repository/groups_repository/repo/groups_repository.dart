@@ -6,7 +6,7 @@ abstract class GroupsRepository {
 
   Stream<List<Group>> getGroupsStream();
 
-  Future<void> createGroup(CreateGroup group);
+  Future<Group> createGroup(CreateGroup group);
 
   Future<Group> joinGroup(String groupId);
 

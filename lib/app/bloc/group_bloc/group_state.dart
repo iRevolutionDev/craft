@@ -22,7 +22,16 @@ class GroupLoaded extends GroupState {
   List<Object> get props => [groups];
 }
 
-class GroupCreated extends GroupState {}
+class GroupCreated extends GroupState {
+  final Group group;
+
+  const GroupCreated({
+    required this.group,
+  });
+
+  @override
+  List<Object> get props => [group];
+}
 
 class GroupError extends GroupState {
   final String message;

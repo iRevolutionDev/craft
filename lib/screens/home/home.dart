@@ -33,18 +33,15 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    if (joinedGroups.contains(uuid)) {
-      setState(() {
-        roomId = uuid;
-      });
-    } else {
+    if (!joinedGroups.contains(uuid)) {
       context.read<GroupBloc>().add(GroupJoin(
             groupId: uuid,
           ));
-      setState(() {
-        roomId = uuid;
-      });
     }
+
+    setState(() {
+      roomId = uuid;
+    });
   }
 
   @override
@@ -89,6 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         BlocListener<GroupBloc, GroupState>(
                           listener: (context, state) {
                             switch (state) {
+                              case GroupCreated(group: final group):
+                                setState(() {
+                                  roomId = group.id;
+                                  joinedGroups.add(group.id);
+                                });
+                                break;
                               case GroupJoined(group: final group):
                                 setState(() {
                                   joinedGroups.add(group.id);
